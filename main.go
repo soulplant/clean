@@ -37,24 +37,30 @@ func expandTabs(str string) (result string) {
 	return
 }
 
-func contractTab(str string) (string, bool) {
+func chompTab(str string) string {
 	if len(str) < *tabSize {
-		return str, false
+		return str
 	}
-	for i := 0; i < *tabSize; i++ {
-		if str[i] != ' ' {
-			return str, false
-		}
+	tab := strings.Repeat(" ", *tabSize)
+
+	if strings.HasPrefix(str, tab) {
+		return str[*tabSize:len(str)]
 	}
-	return "\t" + str[*tabSize:len(str)], true
+	return str
 }
 
 func contractTabs(str string) string {
-	modified := true
-	for modified {
-		str, modified = contractTab(str)
+	tabsChomped := 0
+	for {
+		old_len := len(str)
+		str = chompTab(str)
+		if len(str) != old_len {
+			tabsChomped++
+		} else {
+			break
+		}
 	}
-	return str
+	return strings.Repeat("\t", tabsChomped) + str
 }
 
 func cleanFile(filename string) (trimmed, tabs int) {
