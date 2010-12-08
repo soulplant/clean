@@ -11,7 +11,9 @@ import "flag"
 var expandTabsFlag = flag.Bool("e", false, "Expand tabs into spaces")
 var contractTabsFlag = flag.Bool("c", false, "Contract spaces into tabs")
 var tabSize = flag.Int("ts", 4, "Size of tabs")
-var helpFlag = flag.Bool("h", false, "Display usage.")
+var trailingNewlineFlag = flag.Bool("t", false, "Remove trailing newlines")
+var addTrailingNewlineFlag = flag.Bool("at", false, "Add trailing newline")
+var helpFlag = flag.Bool("h", false, "Display usage")
 
 func isText(filename string) bool {
 	contents, _ := ioutil.ReadFile(filename)
@@ -63,6 +65,19 @@ func contractTabs(str string) string {
 	return strings.Repeat("\t", tabsChomped) + str
 }
 
+func removeTrailingNewlines(lines []string) []string {
+	empties := 0
+	for i := len(lines) - 1; i >= 0; i-- {
+		if lines[i] == "" {
+			empties++
+		} else {
+			break
+		}
+	}
+
+	return lines[0:len(lines) - empties]
+}
+
 func cleanFile(filename string) (trimmed, tabs int) {
 	contents, _ := ioutil.ReadFile(filename)
 
@@ -75,9 +90,24 @@ func cleanFile(filename string) (trimmed, tabs int) {
 		contents = contents[0:len(contents)-1]
 	}
 
-	output := ""
 
-	for _, str := range strings.Split(string(contents), "\n", -1) {
+	lines := strings.Split(string(contents), "\n", -1)
+
+	if *addTrailingNewlineFlag && lines[len(lines)-1] != "" {
+		lines = append(lines, "")
+		fmt.Printf("Added trailing newline.\n")
+	}
+
+	if *trailingNewlineFlag {
+		l := len(lines)
+		lines = removeTrailingNewlines(lines)
+		if len(lines) != l {
+			fmt.Printf("Removed trailing newlines.\n")
+		}
+	}
+
+	output := ""
+	for _, str := range lines {
 		ts := strings.TrimRight(str, " \t")
 		if len(ts) < len(str) {
 			trimmed++
