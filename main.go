@@ -1,5 +1,7 @@
 package main
 
+// TODO: Add an option to add / remove newlines at EOF.
+
 import "fmt"
 import "os"
 import "io/ioutil"
