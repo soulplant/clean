@@ -46,7 +46,7 @@ func chompTab(str string) string {
 	tab := strings.Repeat(" ", *tabSize)
 
 	if strings.HasPrefix(str, tab) {
-		return str[*tabSize:len(str)]
+		return str[*tabSize:]
 	}
 	return str
 }
@@ -75,7 +75,7 @@ func removeTrailingNewlines(lines []string) []string {
 		}
 	}
 
-	return lines[0:len(lines) - empties]
+	return lines[:len(lines) - empties]
 }
 
 func cleanFile(filename string) (trimmed, tabs int) {
@@ -87,7 +87,7 @@ func cleanFile(filename string) (trimmed, tabs int) {
 
 	// Chomp the last newline, because split creates an extra blank after it.
 	if contents[len(contents)-1] == '\n' {
-		contents = contents[0:len(contents)-1]
+		contents = contents[:len(contents)-1]
 	}
 
 
