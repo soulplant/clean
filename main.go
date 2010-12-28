@@ -14,9 +14,11 @@ var addTrailingNewlineFlag = flag.Bool("at", false, "Add trailing newline")
 var helpFlag = flag.Bool("h", false, "Display usage")
 
 func isText(filename string) bool {
-	contents, _ := ioutil.ReadFile(filename)
+	f, _ := os.Open(filename, 0, 0)
+	contents := make([]uint8, 1024)
+	n, _ := f.Read(contents)
 
-	for i := 0; i < 1024 && i < len(contents); i++ {
+	for i := 0; i < 1024 && i < n; i++ {
 		if contents[i] > 0x7e || contents[i] < 0x09 {
 			return false
 		}
